@@ -45,7 +45,8 @@ def error_handler(update, context):
 
 def start(update, context):
     update.message.reply_html(f'''Hi there, send me some QR code photos and I will tell you what they mean
-file any issue or feedback? -> <a href="https://github.com/xuefeng-huang/qr_hero">something is not right</a>''')
+file any issue or feedback? -> <a href="https://github.com/xuefeng-huang/qr_hero">something is not right</a>
+/supportme if you find it useful and wanna treat me a coffee☕️''')
 
 @run_async
 def decode(update, context):
@@ -76,11 +77,16 @@ def text_handler(update, context):
     update.message.reply_text("I'll pretend I understand what you mean, but you know what, a picture is more than "
                                 "thousand words 😎")
 
+def supportme_handler(update, context):
+    update.message.reply_html('''Thanks you, I know you enjoy coffee as well.
+<a href="https://www.paypal.me/coffeeforxuefeng">here's paypalme link</a>''')
+
 def main():
     updater = Updater(TOKEN, use_context=True, workers=4) # worker defaults to 4
     dp = updater.dispatcher
     
     dp.add_handler(CommandHandler('start', start))
+    dp.add_handler(CommandHandler('supportme', supportme_handler))
     dp.add_handler(MessageHandler(Filters.photo, decode))
     dp.add_handler(MessageHandler(Filters.text & (~Filters.command), text_handler))
     dp.add_error_handler(error_handler)

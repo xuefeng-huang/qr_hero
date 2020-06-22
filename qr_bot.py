@@ -1,5 +1,6 @@
 from telegram.ext import Updater, Filters, MessageHandler, CommandHandler
 from telegram.ext.dispatcher import run_async
+from pyzbar import pyzbar
 import cv2
 import os
 import uuid
@@ -64,9 +65,10 @@ def decode(update, context):
     # decode using opencv
     try:
         img = cv2.imread(tf)
-        detector = cv2.QRCodeDetector()
-        data, _, _ = detector.detectAndDecode(img)
-        update.message.reply_text(data)
+        codes = pyzbar.decode(img)
+        logger.info(codes[0].data.decode('utf8'))
+        for code in codes:
+            update.message.reply_text(code.data.decode('utf8'))
     except Exception as e:
         update.message.reply_text("Oops, I can't see a QR code there, someone get my glasses?!")
         logger.error(msg="Exception while handling an update:", exc_info=str(e))

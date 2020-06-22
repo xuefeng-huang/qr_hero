@@ -7,5 +7,6 @@ numpy==1.18.5
 opencv-python==4.2.0.34
 pycparser==2.20
 python-telegram-bot==12.7
+pyzbar==0.1.8
 six==1.15.0
 tornado==6.0.4

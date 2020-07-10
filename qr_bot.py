@@ -9,9 +9,11 @@ import traceback
 import html
 import sys
 
+PORT = int(os.getenv('PORT', 88))
+SERVER_IP = os.getenv('SERVER_IP', None)
 TOKEN = os.getenv('BOT_TOKEN', None)
-if not TOKEN:
-    sys.exit('please set your BOT_TOKEN env variable')
+if not TOKEN or not SERVER_IP:
+    sys.exit('please set your BOT_TOKEN and SERVER_IP env variable')
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
@@ -45,7 +47,7 @@ def error_handler(update, context):
     logger.error(msg="Detail error:", exc_info=message)
 
 def start(update, context):
-    update.message.reply_html(f'''Hi there, send me some QR code photos and I will tell you what they mean
+    update.message.reply_html(f'''Hi {update.effective_user.first_name}, any QR photos at hand?
 file any issue or feedback? -> <a href="https://github.com/xuefeng-huang/qr_hero">something is not right</a>
 /supportme if you find it useful and wanna treat me a coffee☕️''')
 
@@ -66,7 +68,7 @@ def decode(update, context):
     try:
         img = cv2.imread(tf)
         codes = pyzbar.decode(img)
-        logger.info(codes[0].data.decode('utf8'))
+        # logger.info(codes[0].data.decode('utf8'))
         for code in codes:
             update.message.reply_text(code.data.decode('utf8'))
     except Exception as e:
@@ -93,7 +95,12 @@ def main():
     dp.add_handler(MessageHandler(Filters.text & (~Filters.command), text_handler))
     dp.add_error_handler(error_handler)
     
-    updater.start_polling()
+    updater.start_webhook(listen='0.0.0.0',
+                      port=PORT,
+                      url_path=TOKEN,
+                      key='private.key',
+                      cert='cert.pem',
+                      webhook_url=f'https://{SERVER_IP}:{PORT}/{TOKEN}')
     updater.idle()
 
 if __name__ == '__main__':

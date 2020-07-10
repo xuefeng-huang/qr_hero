@@ -69,10 +69,12 @@ def decode(update, context):
         img = cv2.imread(tf)
         codes = pyzbar.decode(img)
         logger.info('received 1 photo')
-        for code in codes:
-            update.message.reply_text(code.data.decode('utf8'))
+        if len(codes) == 0:
+            update.message.reply_text("Oops, I can't see a QR code there, someone get my glasses?!")
+        else:
+            for code in codes:
+                update.message.reply_text(code.data.decode('utf8'))
     except Exception as e:
-        update.message.reply_text("Oops, I can't see a QR code there, someone get my glasses?!")
         logger.error(msg="Exception while handling an update:", exc_info=str(e))
 
     os.remove(tf)

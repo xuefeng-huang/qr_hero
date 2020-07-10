@@ -9,7 +9,7 @@ import traceback
 import html
 import sys
 
-PORT = int(os.getenv('PORT', 88))
+PORT = int(os.getenv('PORT', 8443))
 SERVER_IP = os.getenv('SERVER_IP', None)
 TOKEN = os.getenv('BOT_TOKEN', None)
 if not TOKEN or not SERVER_IP:
@@ -68,7 +68,7 @@ def decode(update, context):
     try:
         img = cv2.imread(tf)
         codes = pyzbar.decode(img)
-        # logger.info(codes[0].data.decode('utf8'))
+        logger.info('received 1 photo')
         for code in codes:
             update.message.reply_text(code.data.decode('utf8'))
     except Exception as e:
